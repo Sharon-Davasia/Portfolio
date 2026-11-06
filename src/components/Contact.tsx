@@ -16,7 +16,7 @@ export function Contact() {
   return (
     <section
       id="contact"
-      className="relative isolate mt-16 scroll-mt-20 overflow-hidden border-t border-line"
+      className="grain relative isolate mt-16 scroll-mt-20 overflow-hidden border-t border-line"
     >
       {/* background composition */}
       <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10">

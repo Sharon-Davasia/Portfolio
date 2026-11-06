@@ -21,7 +21,7 @@ export function Hero() {
     <section
       id="hero"
       ref={ref}
-      className="relative isolate overflow-hidden pb-16 pt-28 sm:pt-32 lg:pb-24 lg:pt-40"
+      className="grain relative isolate overflow-hidden pb-16 pt-28 sm:pt-32 lg:pb-24 lg:pt-40"
     >
       {/* Ambient background */}
       <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10">
