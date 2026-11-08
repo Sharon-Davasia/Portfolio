@@ -346,7 +346,7 @@ export function Work() {
               More experiments on GitHub — RecallPad, ideaforge, NeetCode
             </p>
             <a
-              href="https://github.com/Sharon-Davasia"
+              href="https://github.com/Sharon-Davasia/"
               target="_blank"
               rel="noreferrer noopener"
               className="group/link inline-flex items-center gap-2 text-[0.875rem] text-ink"
