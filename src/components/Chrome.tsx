@@ -1,7 +1,10 @@
 import { motion, useScroll, useSpring, useTransform } from "framer-motion";
 
-
-/** Hairline scroll progress pinned to the very top of the viewport. */
+/**
+ * Hairline scroll progress pinned to the very top of the viewport.
+ * Decorative — it duplicates information already available in the document
+ * outline, so it stays hidden from assistive technology.
+ */
 export function ScrollProgress() {
   const { scrollYProgress } = useScroll();
   const scaleX = useSpring(scrollYProgress, { stiffness: 140, damping: 28, restDelta: 0.001 });
