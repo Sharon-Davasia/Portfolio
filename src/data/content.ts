@@ -58,7 +58,7 @@ export const projects: Project[] = [
     ],
     links: [
       { label: "Repository", href: "https://github.com/Sharon-Davasia" },
-      { label: "Live demo", href: "https://github.com/Sharon-Davasia" },
+      { label: "Live view", href: "https://cardio-assist.vercel.app" },
     ],
     featured: true,
     visual: "triage",
@@ -78,7 +78,10 @@ export const projects: Project[] = [
       { value: "sub-second", label: "retrieval latency" },
       { value: "+40%", label: "answer accuracy" },
     ],
-    links: [{ label: "Repository", href: "https://github.com/Sharon-Davasia" }],
+    links: [
+      { label: "Repository", href: "https://github.com/Sharon-Davasia" },
+      { label: "Live view", href: "https://neurogid-rag-system.vercel.app" },
+    ],
     featured: true,
     visual: "rag",
   },
