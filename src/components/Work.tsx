@@ -1,40 +1,15 @@
 import {
   motion,
-  useMotionValue,
   useReducedMotion,
   useScroll,
-  useSpring,
   useTransform,
 } from "framer-motion";
-import { useRef, type PointerEvent } from "react";
+import { useRef } from "react";
 import { projects, type Project } from "../data/content";
-import { EASE, usePointerFine } from "../lib/motion";
+import { EASE } from "../lib/motion";
 import { ProjectVisual } from "./ProjectVisual";
 import { ArrowUpRight, MaskedLines, Reveal } from "./primitives";
 import { Crosshair } from "./Chrome";
-
-/* ------------------------------------------------------------------ */
-/*  Hover indicator that follows the cursor inside a preview          */
-/* ------------------------------------------------------------------ */
-
-function usePreviewHover() {
-  const fine = usePointerFine();
-  const reduced = useReducedMotion();
-  const x = useMotionValue(0);
-  const y = useMotionValue(0);
-  const springX = useSpring(x, { stiffness: 260, damping: 30, mass: 0.4 });
-  const springY = useSpring(y, { stiffness: 260, damping: 30, mass: 0.4 });
-  const enabled = fine && !reduced;
-
-  const onMove = (e: PointerEvent<HTMLDivElement>) => {
-    if (!enabled) return;
-    const rect = e.currentTarget.getBoundingClientRect();
-    x.set(e.clientX - rect.left);
-    y.set(e.clientY - rect.top);
-  };
-
-  return { enabled, springX, springY, onMove };
-}
 
 function PreviewChrome({ children, label }: { children: React.ReactNode; label: string }) {
   return (
@@ -55,7 +30,6 @@ function FeaturedProject({ project, index }: { project: Project; index: number }
   const visualRef = useRef<HTMLDivElement>(null);
   const reduced = useReducedMotion();
   const flip = index % 2 === 1;
-  const { enabled, springX, springY, onMove } = usePreviewHover();
 
   const { scrollYProgress } = useScroll({
     target: visualRef,
@@ -76,13 +50,10 @@ function FeaturedProject({ project, index }: { project: Project; index: number }
           transition={{ duration: reduced ? 0.001 : 1.05, ease: EASE }}
           className={`relative lg:col-span-7 ${flip ? "lg:order-2" : ""}`}
         >
-          <div
-            className="relative aspect-[16/11] overflow-hidden border border-line bg-cream transition-colors duration-500 ease-smooth group-hover:border-ink/20 sm:aspect-[16/10]"
-            onPointerMove={onMove}
-          >
+          <div className="relative aspect-[16/11] overflow-hidden border border-line bg-cream transition-colors duration-500 ease-smooth group-hover:border-ink/20 sm:aspect-[16/10]">
             <motion.div className="absolute inset-0" style={{ scale, y: driftY }}>
               <motion.div
-                className="absolute inset-[-2%] transition-transform duration-[900ms] ease-smooth group-hover:scale-[1.045]"
+                className="absolute inset-[-2%] transition-transform duration-[900ms] ease-smooth group-hover:scale-[1.035]"
                 initial={false}
               >
                 <PreviewChrome label={`0${index + 1} / ${project.year}`}>
@@ -90,20 +61,6 @@ function FeaturedProject({ project, index }: { project: Project; index: number }
                 </PreviewChrome>
               </motion.div>
             </motion.div>
-
-            {/* hover veil for legibility of the cursor chip */}
-            <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-ink/[0.06] via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
-
-            {/* cursor chip */}
-            {enabled && (
-              <motion.div
-                aria-hidden="true"
-                className="pointer-events-none absolute left-0 top-0 z-20 flex h-[4.5rem] w-[4.5rem] items-center justify-center rounded-full bg-ink text-paper opacity-0 transition-opacity duration-300 group-hover:opacity-100"
-                style={{ x: springX, y: springY, translateX: "-50%", translateY: "-50%" }}
-              >
-                <span className="font-mono text-[0.5rem] uppercase tracking-[0.14em]">View</span>
-              </motion.div>
-            )}
 
             {/* corner ticks */}
             <span className="pointer-events-none absolute bottom-3 right-3 z-10 h-4 w-4 border-b border-r border-ink/25" />
@@ -175,24 +132,40 @@ function FeaturedProject({ project, index }: { project: Project; index: number }
 
           {/* links */}
           <Reveal delay={0.36}>
-            <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3">
-              {project.links.map((link) => (
-                <a
-                  key={link.label}
-                  href={link.href}
-                  target="_blank"
-                  rel="noreferrer noopener"
-                  className="group/link relative inline-flex items-center gap-2 text-[0.875rem] text-ink"
-                >
-                  <span className="relative">
-                    {link.label}
-                    <span className="absolute -bottom-1 left-0 h-px w-full origin-left scale-x-0 bg-ink transition-transform duration-300 ease-smooth group-hover/link:scale-x-100" />
-                  </span>
-                  <span className="transition-transform duration-300 ease-smooth group-hover/link:translate-x-0.5 group-hover/link:-translate-y-0.5">
-                    <ArrowUpRight size={12} />
-                  </span>
-                </a>
-              ))}
+            <div className="mt-8 flex flex-wrap items-center gap-x-5 gap-y-3">
+              {project.links.map((link) => {
+                const isLive = link.label.toLowerCase().includes("live");
+                return isLive ? (
+                  <a
+                    key={link.label}
+                    href={link.href}
+                    target="_blank"
+                    rel="noreferrer noopener"
+                    className="group/link inline-flex items-center gap-2 rounded-full border border-ink/20 bg-paper px-4 py-2 text-[0.8125rem] font-medium text-ink transition-all duration-300 ease-smooth hover:-translate-y-0.5 hover:border-ink hover:bg-ink hover:text-paper"
+                  >
+                    <span>{link.label}</span>
+                    <span className="transition-transform duration-300 ease-smooth group-hover/link:translate-x-0.5 group-hover/link:-translate-y-0.5">
+                      <ArrowUpRight size={12} />
+                    </span>
+                  </a>
+                ) : (
+                  <a
+                    key={link.label}
+                    href={link.href}
+                    target="_blank"
+                    rel="noreferrer noopener"
+                    className="group/link relative inline-flex items-center gap-2 text-[0.875rem] text-ink"
+                  >
+                    <span className="relative">
+                      {link.label}
+                      <span className="absolute -bottom-1 left-0 h-px w-full origin-left scale-x-0 bg-ink transition-transform duration-300 ease-smooth group-hover/link:scale-x-100" />
+                    </span>
+                    <span className="transition-transform duration-300 ease-smooth group-hover/link:translate-x-0.5 group-hover/link:-translate-y-0.5">
+                      <ArrowUpRight size={12} />
+                    </span>
+                  </a>
+                );
+              })}
             </div>
           </Reveal>
         </div>
@@ -206,8 +179,6 @@ function FeaturedProject({ project, index }: { project: Project; index: number }
 /* ------------------------------------------------------------------ */
 
 function ProjectRow({ project, index }: { project: Project; index: number }) {
-  const { enabled, springX, springY, onMove } = usePreviewHover();
-
   return (
     <motion.article
       initial={{ opacity: 0, y: 20 }}
@@ -224,22 +195,12 @@ function ProjectRow({ project, index }: { project: Project; index: number }) {
         </div>
 
         <div className="sm:col-span-4">
-          <div
-            className="relative aspect-[16/9] overflow-hidden border border-line bg-cream transition-colors duration-500 ease-smooth group-hover:border-ink/20"
-            onPointerMove={onMove}
-          >
-            <div className="absolute inset-0 transition-transform duration-[900ms] ease-smooth group-hover:scale-[1.06]">
+          <div className="relative aspect-[16/9] overflow-hidden border border-line bg-cream transition-colors duration-500 ease-smooth group-hover:border-ink/20">
+            <div className="absolute inset-0 transition-transform duration-[900ms] ease-smooth group-hover:scale-[1.04]">
               <PreviewChrome label={project.kicker}>
                 <ProjectVisual kind={project.visual} />
               </PreviewChrome>
             </div>
-            {enabled && (
-              <motion.span
-                aria-hidden="true"
-                className="pointer-events-none absolute left-0 top-0 z-20 h-9 w-9 rounded-full border border-ink/30 bg-paper/70 opacity-0 backdrop-blur-sm transition-opacity duration-300 group-hover:opacity-100"
-                style={{ x: springX, y: springY, translateX: "-50%", translateY: "-50%" }}
-              />
-            )}
           </div>
         </div>
 
